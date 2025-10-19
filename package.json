@@ -1,7 +1,7 @@
 {
   "name": "shadow-media-hoster",
-  "version": "1.1.0",
-  "description": "Temporary image and video hoster using Render + GitHub",
+  "version": "1.2.0",
+  "description": "Temporary image, video, and audio hoster using Render + GitHub",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
