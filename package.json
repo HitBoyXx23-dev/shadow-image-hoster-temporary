@@ -1,7 +1,7 @@
 {
-  "name": "shadow-image-hoster",
-  "version": "1.0.0",
-  "description": "A temporary image hoster with share links using Render and GitHub",
+  "name": "shadow-media-hoster",
+  "version": "1.1.0",
+  "description": "Temporary image and video hoster using Render + GitHub",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
