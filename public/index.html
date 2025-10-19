@@ -9,12 +9,13 @@
   <canvas id="particles"></canvas>
   <div class="container">
     <h1>🌌 Shadow Media Hoster</h1>
-    <p class="subtitle">Upload images, videos, or audio — temporary hosting</p>
+    <p class="subtitle">Upload images (GIFs), videos, or audio — temporary hosting</p>
 
     <div class="upload-box">
       <input type="file" id="fileInput" accept="image/*,video/*,audio/*">
       <input type="text" id="urlInput" placeholder="Or paste media URL">
       <button id="uploadBtn">Upload</button>
+      <div class="progress-bar"><div class="progress" id="progress"></div></div>
       <p class="warning">⚠️ Files are temporary and may be deleted anytime.</p>
     </div>
 
