@@ -77,10 +77,16 @@ h1 {
 }
 
 #result img,
-#result video {
+#result video,
+#result audio {
   max-width: 90%;
   border-radius: 10px;
   box-shadow: 0 0 20px #4b0082;
+}
+
+audio {
+  margin-top: 10px;
+  width: 90%;
 }
 
 .link-box {
