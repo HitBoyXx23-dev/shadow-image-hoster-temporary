@@ -2,24 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Shadow Image Hoster</title>
+  <title>Shadow Media Hoster</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="particles"></canvas>
   <div class="container">
-    <h1>🌌 Shadow Image Hoster</h1>
-    <p class="subtitle">Temporary uploads with share links</p>
+    <h1>🌌 Shadow Media Hoster</h1>
+    <p class="subtitle">Upload images or videos — temporary hosting</p>
 
     <div class="upload-box">
-      <input type="file" id="fileInput" accept="image/*">
-      <input type="text" id="urlInput" placeholder="Or paste image URL">
+      <input type="file" id="fileInput" accept="image/*,video/*">
+      <input type="text" id="urlInput" placeholder="Or paste media URL">
       <button id="uploadBtn">Upload</button>
+      <p class="warning">⚠️ Files are stored temporarily and may be deleted anytime.</p>
     </div>
 
     <div id="result" class="hidden">
       <h2>✅ Uploaded!</h2>
-      <img id="preview" src="">
+      <div id="mediaPreview"></div>
       <div class="link-box">
         <input type="text" id="shareLink" readonly>
         <button id="copyBtn">Copy</button>
