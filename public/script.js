@@ -1,6 +1,8 @@
 const uploadBtn = document.getElementById('uploadBtn');
 const fileInput = document.getElementById('fileInput');
 const urlInput = document.getElementById('urlInput');
+const progressBar = document.querySelector('.progress-bar');
+const progress = document.getElementById('progress');
 const resultBox = document.getElementById('result');
 const mediaPreview = document.getElementById('mediaPreview');
 const shareLink = document.getElementById('shareLink');
@@ -25,32 +27,45 @@ uploadBtn.addEventListener('click', async () => {
 
   uploadBtn.disabled = true;
   uploadBtn.textContent = 'Uploading...';
+  progressBar.style.display = 'block';
+  progress.style.width = '0%';
 
   try {
-    const res = await fetch('/upload', { method: 'POST', body: formData });
-    const text = await res.text();
-    const match = text.match(/href="([^"]+)"/);
-    const link = match ? match[1] : null;
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload');
 
-    if (link) {
-      resultBox.classList.remove('hidden');
-      shareLink.value = link;
-      if (/\.(mp4|webm|mov|avi|mkv)$/i.test(link)) {
-        mediaPreview.innerHTML = `<video src="${link}" controls></video>`;
-      } else if (/\.(mp3|wav|ogg)$/i.test(link)) {
-        mediaPreview.innerHTML = `<audio src="${link}" controls></audio>`;
-      } else {
-        mediaPreview.innerHTML = `<img src="${link}" alt="preview">`;
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        progress.style.width = percent + '%';
       }
-    } else {
-      alert('Upload failed.');
-    }
+    };
+
+    xhr.onload = () => {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = 'Upload';
+      progressBar.style.display = 'none';
+      if (xhr.status === 200) {
+        const match = xhr.responseText.match(/href="([^"]+)"/);
+        const link = match ? match[1] : null;
+        if (link) {
+          resultBox.classList.remove('hidden');
+          shareLink.value = link;
+          if (/\.(mp4|webm|mov|avi|mkv)$/i.test(link)) {
+            mediaPreview.innerHTML = `<video src="${link}" controls></video>`;
+          } else if (/\.(mp3|wav|ogg)$/i.test(link)) {
+            mediaPreview.innerHTML = `<audio src="${link}" controls></audio>`;
+          } else {
+            mediaPreview.innerHTML = `<img src="${link}" alt="preview">`;
+          }
+        }
+      } else alert('Upload failed.');
+    };
+
+    xhr.send(formData);
   } catch (err) {
     alert('Error uploading file.');
     console.error(err);
-  } finally {
-    uploadBtn.disabled = false;
-    uploadBtn.textContent = 'Upload';
   }
 });
 
@@ -60,15 +75,11 @@ copyBtn.addEventListener('click', () => {
   setTimeout(() => (copyBtn.textContent = 'Copy'), 1500);
 });
 
-/* --- Purple particle background --- */
+/* --- Purple particle animation --- */
 const canvas = document.getElementById('particles');
 const ctx = canvas.getContext('2d');
 let particles = [];
-
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
+function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 window.addEventListener('resize', resize);
 resize();
 
@@ -81,7 +92,6 @@ for (let i = 0; i < 100; i++) {
     color: ['#9d4edd', '#6a0dad', '#4b0082'][Math.floor(Math.random() * 3)],
   });
 }
-
 function drawParticles() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   particles.forEach((p) => {
