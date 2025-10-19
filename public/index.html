@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Shadow Image Hoster</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <canvas id="particles"></canvas>
+  <div class="container">
+    <h1>🌌 Shadow Image Hoster</h1>
+    <p class="subtitle">Temporary uploads with share links</p>
+
+    <div class="upload-box">
+      <input type="file" id="fileInput" accept="image/*">
+      <input type="text" id="urlInput" placeholder="Or paste image URL">
+      <button id="uploadBtn">Upload</button>
+    </div>
+
+    <div id="result" class="hidden">
+      <h2>✅ Uploaded!</h2>
+      <img id="preview" src="">
+      <div class="link-box">
+        <input type="text" id="shareLink" readonly>
+        <button id="copyBtn">Copy</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
