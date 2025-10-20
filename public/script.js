@@ -16,10 +16,17 @@ uploadBtn.addEventListener('click', async () => {
   if (file) {
     formData.append('image', file);
   } else if (mediaUrl) {
-    const response = await fetch(mediaUrl);
-    const blob = await response.blob();
-    const filename = mediaUrl.split('/').pop().split('?')[0] || 'media';
-    formData.append('image', blob, filename);
+    try {
+      const response = await fetch(mediaUrl, { mode: 'cors' });
+      if (!response.ok) throw new Error('Unable to fetch the provided URL.');
+      const blob = await response.blob();
+      const filename = mediaUrl.split('/').pop().split('?')[0] || 'media';
+      formData.append('image', blob, filename);
+    } catch (error) {
+      alert('Error fetching media from URL. Make sure it’s a valid public link.');
+      console.error(error);
+      return;
+    }
   } else {
     alert('Please select a file or enter a media URL.');
     return;
@@ -30,43 +37,53 @@ uploadBtn.addEventListener('click', async () => {
   progressBar.style.display = 'block';
   progress.style.width = '0%';
 
-  try {
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', '/upload');
+  const xhr = new XMLHttpRequest();
+  xhr.open('POST', '/upload'); // Backend endpoint
 
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) {
-        const percent = Math.round((e.loaded / e.total) * 100);
-        progress.style.width = percent + '%';
-      }
-    };
+  xhr.upload.onprogress = (e) => {
+    if (e.lengthComputable) {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      progress.style.width = percent + '%';
+    }
+  };
 
-    xhr.onload = () => {
-      uploadBtn.disabled = false;
-      uploadBtn.textContent = 'Upload';
-      progressBar.style.display = 'none';
-      if (xhr.status === 200) {
-        const match = xhr.responseText.match(/href="([^"]+)"/);
-        const link = match ? match[1] : null;
-        if (link) {
+  xhr.onload = () => {
+    uploadBtn.disabled = false;
+    uploadBtn.textContent = 'Upload';
+    progressBar.style.display = 'none';
+
+    if (xhr.status === 200) {
+      try {
+        // Expecting JSON from backend
+        const { url } = JSON.parse(xhr.responseText);
+        if (url) {
           resultBox.classList.remove('hidden');
-          shareLink.value = link;
-          if (/\.(mp4|webm|mov|avi|mkv)$/i.test(link)) {
-            mediaPreview.innerHTML = `<video src="${link}" controls></video>`;
-          } else if (/\.(mp3|wav|ogg)$/i.test(link)) {
-            mediaPreview.innerHTML = `<audio src="${link}" controls></audio>`;
-          } else {
-            mediaPreview.innerHTML = `<img src="${link}" alt="preview">`;
-          }
-        }
-      } else alert('Upload failed.');
-    };
+          shareLink.value = url;
 
-    xhr.send(formData);
-  } catch (err) {
-    alert('Error uploading file.');
-    console.error(err);
-  }
+          if (/\.(mp4|webm|mov|avi|mkv)$/i.test(url)) {
+            mediaPreview.innerHTML = `<video src="${url}" controls></video>`;
+          } else if (/\.(mp3|wav|ogg)$/i.test(url)) {
+            mediaPreview.innerHTML = `<audio src="${url}" controls></audio>`;
+          } else {
+            mediaPreview.innerHTML = `<img src="${url}" alt="preview">`;
+          }
+        } else {
+          alert('No URL returned from server.');
+        }
+      } catch (err) {
+        alert('Unexpected response from server.');
+        console.error(err);
+      }
+    } else {
+      alert('Upload failed.');
+    }
+  };
+
+  xhr.onerror = () => {
+    alert('Network error while uploading.');
+  };
+
+  xhr.send(formData);
 });
 
 copyBtn.addEventListener('click', () => {
